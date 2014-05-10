@@ -12,7 +12,7 @@ function GetJogadores()
 	
 	$result = mysqli_query($con,"SELECT * FROM jogador");
 	$cont = 0;
-	print("jogadores = [ \n");
+	print("jogadores = { \n");
 	while($row = mysqli_fetch_array($result)) 
 	{
 		//echo $row['nome'];
@@ -28,11 +28,16 @@ function GetJogadores()
 		print(" time =" . $row['time']."  \n");
 		print("} \n");		
 	}
-	print("]\n");  
+	print("}\n");  
 	mysqli_close($con);
 	//echo "ola";
 }
-	GetJogadores();
+	//GetJogadores();
+	if(isset($_REQUEST["jogadores"])) 
+	{
+		GetJogadores();
+	}
+	
 	if(isset($_REQUEST["jogadores"])) 
 	{
 		GetJogadores();
