@@ -23,6 +23,7 @@ function GetJogadores()
 		}
 		else
 			print(",{ \n");
+		print(" id = " . $row['id'] . ", \n");
 		print(" name = " . $row['nome'] . ", \n");
 		print(" status = " .$row['status'] .",  \n");
 		print(" time =" . $row['time']."  \n");
@@ -32,15 +33,34 @@ function GetJogadores()
 	mysqli_close($con);
 	//echo "ola";
 }
+
+function SetVotes($id_jog_entra, $id_jog_sai)
+{
+	$con=mysqli_connect("127.0.0.1","root","","redesmm");
+	// Check connection
+	if (mysqli_connect_errno()) {
+	  echo "Failed to connect to MySQL: " . mysqli_connect_error();	}
+
+	mysqli_query($con,"INSERT INTO substituicao (id_jog_entra, id_jog_sai, id_partida)
+	VALUES ($id_jog_entra, $id_jog_sai,1)");
+	
+	mysqli_close($con);
+	
+}
+	//SetVotes(1,2);
 	//GetJogadores();
 	if(isset($_REQUEST["jogadores"])) 
 	{
 		GetJogadores();
 	}
 	
-	if(isset($_REQUEST["jogadores"])) 
+	if(isset($_REQUEST["voto"])) 
 	{
-		GetJogadores();
+		//voto = strtolower($_REQUEST["voto"]);
+		$id_jog_entra = $_REQUEST["id_jog_entra"];
+		$id_jog_sai = $_REQUEST["id_jog_entra"];
+		
+		SetVotes($id_jog_entra, $id_jog_sai);
 	}
 	
 ?>
