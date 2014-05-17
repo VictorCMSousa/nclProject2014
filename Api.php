@@ -5,7 +5,7 @@ define("RANKING_VOTES", 1);
 function _FetchJogadores($result, $mode)
 {	
 	$cont = 0;
-	print("jogadores = { \n");
+	print("jogadoress = { \n");
 	if($mode == 0 )
 	{
 		while($row = mysqli_fetch_array($result)) 
@@ -44,8 +44,9 @@ function _FetchJogadores($result, $mode)
 			print(" foto_path_entra = " . $row['foto_path_entra'].",  \n");
 			print(" nome_sai = " . $row['nome_sai'] . ", \n");
 			print(" time_sai = " . $row['time_sai'] . ", \n");
-			print(" camisa_sai = " .$row['camisa_sai'] ."  \n");
-			print(" foto_path_sai = " . $row['foto_path_sai']."  \n");
+			print(" camisa_sai = " .$row['camisa_sai'] .",  \n");
+			print(" foto_path_sai = " . $row['foto_path_sai'].",  \n");
+			print(" count_votos = " . $row['soma']."  \n");
 			print("} \n");		
 		}
 	}
@@ -88,7 +89,7 @@ FROM `substituicao` as sub inner join `jogador` as jog on jog.id = sub.id_jog_en
 	mysqli_close($con);
 	
 }
-	SetVotes(1,2, "Brasil");
+	SetVotes(3,5, "Brasil");
 	
 	//GetJogadores();
 	if(isset($_REQUEST["jogadores"])) 
