@@ -1,0 +1,191 @@
+/misc/launcher.sh /misc/ncl30/final/main_novo.ncl
+
+	<link xconnector="onKeySelectionStart">
+		<bind component="idBotao" role="onSelection">
+			<bindParam name="keyCode" value="BLUE" />
+		</bind>
+		<bind component="idVote" role="start" />
+		
+  	</link>
+	
+	----------------
+-- CLASSES: Inclusao das classes
+----------------
+require 'constantes-ctes' -- constantes do jogo
+require 'jogador-class' -- classe peca
+require 'tabuleiro-class' -- classe tabuleiro
+require 'controle-class' -- classe de controle do jogo
+require 'image-class' -- classe para desenho na tela
+require 'tcp'
+
+----------------
+-- OBJETOS: Instanciacao dos objetos
+----------------
+tabuleiro = Tabuleiro:new(4,3)
+controle = Controle:new()
+image = Image:new()
+
+----------------
+-- IMAGENS: desenho das imagens
+----------------
+local fundo = image:newPicture('media/background.jpg',0,0) -- Plano de fundo
+local cursor = image:newPicture('media/cursor.png',390,280) -- Cursor
+
+
+-- jogadores. inicia as posicoes das jogadores
+local params = "jogadores=1"
+serverRequest(params, 1)
+
+
+--inicializacao das posicoes das jogadores. Melhorar rotina depois
+
+
+--url = "GET http://"..host.."/api.php?". params
+
+
+-- desenha tela de abertura
+
+print("cori")
+function drawImage(src, x, y)
+	local img = image:newPicture(src,x,y)
+	canvas:compose(x,y,img)
+end
+
+function writeResult(jogadores, mode) 
+   canvas:attrColor(255,255,255,0)
+   canvas:clear()   
+   canvas:attrFont("vera", 24)
+   print("asdasda")
+   if(mode == 2) then -- imprime os votos
+	   canvas:drawText(10, 5, "Entra: "..jogadores.nome_entra)
+	   canvas:drawText(10, 30, "Camisa:: "..jogadores.camisa_entra)
+	   canvas:drawText(10, 55, "N de votos: "..jogadores.count_votos)
+	   drawImage(jogadores.foto_path_entra, 250, 250)   
+	   canvas:drawText(10, 75, "Entra: "..jogadores.nome_sai)
+	   canvas:drawText(10, 100, "Camisa:: "..jogadores.camisa_sai)
+	   canvas:drawText(10, 130, "N de votos: "..jogadores.count_sai)
+	   drawImage(jogadores.foto_path_sai, 250, 290)
+   else
+		jogadoresImg = {}
+		for i=1,4 do 
+			jogadoresImg[i] = {}     -- cria uma nova linha
+			for j=1,3 do
+				jogadoresImg[i][j] =  image:newPicture(tabuleiro[i][j].getCaminhoFoto(),0,0)
+				jogadoresImg[i][j].x = j*95 + 10
+				jogadoresImg[i][j].y = i*108 + 10
+				canvas:drawText(j*95 + 10, i*108 + 10, ""..tabuleiro[i][j].getNome())				
+			end
+		end
+		image:drawStart(fundo,jogadoresImg,TEXTO[1])
+   end
+   canvas:flush()
+end
+
+function serverRequest(params, mode)
+	local host = "192.168.1.104"
+	tcp.execute(
+        function ()
+            writeText("Obtendo resultado. Por favor, aguarde...")
+            tcp.connect(host, 80)
+            --conecta no servidor
+            print("Conectado a "..host)
+            
+            local url = "GET http://"..host.."/Api.php?"..params.."\n"
+            print("URL: "..url)
+            --envia uma requisição HTTP para gravar voto no servidor remoto
+            tcp.send(url)
+           	
+           	--obtém todo o conteúdo da página acessada
+            local result = tcp.receive("*a")
+            if result then
+            	print("Dados da conexao TCP recebidos")
+            	--obtem o resultado da página php acessada,
+            	--que retorna um código lua contendo
+            	--a criação de uma tabela com o
+            	--resultado da votação		    	
+		        f = loadstring(result)
+		        --se o código lua retornado pela página php foi
+		        --compilado, executa o mesmo. Neste momento,
+		        --a tabela votos = { sim, nao, url } será criada
+		        --contados o total de votos sim, o total de não
+		        --e o domínio do meu site   
+				if f then 
+				   f()
+				   writeResult(votos, mode)
+			       
+			       --Após ter sido feito a requisição para contabilizar o voto
+			       --e exibido o resultado,
+			       --deve-se notificar o documento NCL para que ele
+			       --interrompa o nó lua para que o resultado não  
+			       --seja mais apresentado.
+			       --Para isso, é gerado um evento do tipo
+			       --atributtion, atribuindo um valor qualquer
+			       --à propriedade result do nó lua atual.
+			       setLuaPropertie("result", 1)
+				end
+		    else
+            	print("Erro ao receber dados da conexao TCP")
+            	if evt.error ~= nil then 
+		        	result = 'error: ' .. evt.error
+		        end
+	        end
+	        
+            tcp.disconnect()
+        end
+    )
+end
+	
+	--apenas eventos do teclado interessam para o jogo
+	if (evt.class == 'key') and (evt.type == 'press') 	then
+		if not IGNORE then
+			-- movimento do cursor
+			-- apenas as setas movem o cursor
+			if evt.key == 'CURSOR_UP' then
+				if cursor.y > 185 then
+					cursor.y = cursor.y - 95
+				end
+			elseif evt.key == 'CURSOR_DOWN' then
+				if cursor.y < 375 then
+					cursor.y = cursor.y + 95
+				end
+			elseif evt.key == 'CURSOR_LEFT' then
+				if cursor.x > 245 then
+					cursor.x = cursor.x - 145
+				end
+			elseif evt.key == 'CURSOR_RIGHT' then
+				if cursor.x < 535 then
+					cursor.x = cursor.x + 145
+				end
+			end
+
+			-- a cada movimento do cursor redesenha toda a tela
+			image:reDraw(fundo,jogadoresImg,cursor,TEXTO[1])
+
+			-- testa se o cursor foi precionado em cima do alvo = Jogador efetuou jogada
+			if evt.key == 'ENTER' then
+				local count = 0
+				for i=1,4 do
+					for j=1,3 do
+						if count == 2 then
+							IGNORE = true
+						--se houve um jogador selecionado
+						elseif controle:collide(cursor,jogadoresImg[i][j]) then
+							image:reDraw(fundo, jogadoresImg, cursor,TEXTO[2])
+							count = count + 1
+						end -- END do if collide
+					end
+				end				
+			end -- END do if do 'ENTER'
+		-- ao termino do jogo, posta eventos que serao responsaveis por reiniciar o jogo
+		elseif IGNORE then
+			-- a maquina virtual (0.10.1) esta com um bug que nao permite que as teclas F1, F2, F3 e F4 sejam mapeadas nas teclas coloridas
+			-- por isso alterei a tecla de voltar. O correto seria "YELLOW"				
+			if evt.key == '1' then  
+				event.post{class='ncl', type='attribution', name='nivel',action='stop'}
+				event.post{class='ncl', type='presentation', label='ReStart',action='start'}
+				event.post{class='ncl', type='presentation', label='ReStart',action='stop'}
+				event.post{class='ncl', type='presentation', action='stop'}
+			end
+		end			
+	end
+-- 

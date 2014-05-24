@@ -30,21 +30,31 @@ Tabuleiro = {}
 -- Deve conter os atributos privados e os metodos para acessar diretamente esses atributos<br> 
 -- @param linha Quantas linhas tera a matriz tabuleiro.
 -- @param colua Quantas colunas tera a matriz tabuleiro. 
-function Tabuleiro:new(linha,coluna)
+function Tabuleiro:new(linha,coluna,lista)
 	local t = {} --cria a matriz
 	local attr = {camposVazios = (linha*coluna)}
-	
+	local k = 1
+	local jogador = Jogador:new(lista[k]["id"], lista[k]["name"], lista[k]["status"], lista[k]["time"], lista[k]["foto_path"])
 	for i=1,linha do
 		t[i] = {}     -- cria uma nova linha
 		for j=1,coluna do
 			--t[i][j] = 0  --cria as colunas preenchendo com 0
-			t[i][j] = Jogador:new(VAZIO, VAZIO, VAZIO, VAZIO)  --coloca em cada posicao do tabuleiro uma peca vazia
+			t[i][j] = Jogador:new(lista[k]["id"], lista[k]["name"], lista[k]["status"], lista[k]["time"], lista[k]["foto_path"])  --coloca em cada posicao do tabuleiro uma peca vazia
+			print(lista[k]["name"])
+			--print(lista[k]["foto_path"])
+		--	print(''..getPosicao(i,j))
+			k = k+1
 		end
 	end
 	
 	local function getPosicao(linha,coluna)
+		print('getposicao')
 		return t[linha][coluna].getId()
 	end
+	
+--	local function getCaminhoFoto(linha, coluna)
+	--	return t[linha][coluna].getCaminhoFoto()
+--	end
 	
 	local function getCamposVazios()
 		return attr.camposVazios
@@ -70,6 +80,12 @@ function Tabuleiro:new(linha,coluna)
 	self.__index = self
 
 	return obj
+end
+
+function tablelength(T)
+  local count = 0
+  for _ in pairs(T) do count = count + 1 end
+  return count
 end
 
 
