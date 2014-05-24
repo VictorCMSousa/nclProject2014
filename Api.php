@@ -19,10 +19,10 @@ function _FetchJogadores($result, $mode)
 			else
 				print(",{ \n");
 			print(" id = " . $row['id'] . ", \n");
-			print(" name = " . $row['nome'] . ", \n");
-			print(" status = " .$row['status'] .",  \n");
-			print(" time = " . $row['time'].",  \n");
-			print(" foto_path = " . $row['foto_path']."  \n");
+			print(" name = \"" . $row['nome'] . "\", \n");
+			print(" status = \"" .$row['status'] ."\",  \n");
+			print(" time = \"" . $row['time']."\",  \n");
+			print(" foto_path = \"" . $row['foto_path']."\"  \n");
 			print("} \n");		
 		}
 	}
@@ -69,7 +69,7 @@ function GetJogadores()
 	//echo "ola";
 }
 
-function SetVotes($id_jog_entra, $id_jog_sai, $time)
+function SetVotes($id_jog_entra, $id_jog_sai)
 {
 
 	$con=mysqli_connect("127.0.0.1","root","","redesmm");
@@ -89,7 +89,7 @@ FROM `substituicao` as sub inner join `jogador` as jog on jog.id = sub.id_jog_en
 	mysqli_close($con);
 	
 }
-	SetVotes(3,5, "Brasil");
+	//SetVotes(3,5);
 	
 	//GetJogadores();
 	if(isset($_REQUEST["jogadores"])) 
@@ -101,10 +101,9 @@ FROM `substituicao` as sub inner join `jogador` as jog on jog.id = sub.id_jog_en
 	{
 		//voto = strtolower($_REQUEST["voto"]);
 		$id_jog_entra = $_REQUEST["id_jog_entra"];
-		$id_jog_sai = $_REQUEST["id_jog_entra"];
-		$time = $_REQUEST["time"];
+		$id_jog_sai = $_REQUEST["id_jog_sai"];
 		
-		SetVotes($id_jog_entra, $id_jog_sai, $time);
+		SetVotes($id_jog_entra, $id_jog_sai);
 	}
 	
 ?>
