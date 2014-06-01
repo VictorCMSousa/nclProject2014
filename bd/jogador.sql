@@ -62,7 +62,7 @@ INSERT INTO `jogador` (`id`, `nome`, `camisa`, `status`, `time`, `foto_path`) VA
 (20, 'Grafite', '23', 'reserva', 'Brasil', 'media/grafite.jpg'),
 (21, 'Nilmar', '21', 'reserva', 'Brasil', 'media/nilmar.jpg'),
 (22, 'Doni', '22', 'reserva', 'Brasil', 'media/doni.jpg'),
-(23, 'Michel Bastos', '6', 'reserva', 'Brasil', 'media/michel_bastos.jpg');
+(23, 'Michel Bastos', '6', 'reserva', 'Brasil', 'media/michel_bastos.jpg'),
 (24, 'Julio Baptista', '35', 'reserva', 'Brasil', 'media/julio_baptista.jpg');
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
